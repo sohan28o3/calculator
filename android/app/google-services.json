@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "647763148298",
+    "firebase_url": "https://calculator-baf0e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "calculator-baf0e",
+    "storage_bucket": "calculator-baf0e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647763148298:android:8b86e58fe5a463fde569f3",
+        "android_client_info": {
+          "package_name": "com.example.calculator1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHxcBTOPrEzzqjo3g0EXEN-PJfewoaB5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,17 +1,18 @@
-import 'package:calculator1/button_details_2.dart';  //Home property of the app
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:calculator1/screens/login.dart';
+import 'package:calculator1/button_details.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:math';
-import 'package:calculator1/calculator_face.dart';
+import 'package:calculator1/screens/calculator_page_2.dart';
 
-class Page2 extends StatefulWidget {
-  const Page2({super.key});
+class CalculatorFace extends StatefulWidget {
+  const CalculatorFace({super.key});
 
   @override
-  State<Page2> createState() => _Page2State();
+  State<CalculatorFace> createState() => _CalculatorFaceState();
 }
 
-class _Page2State extends State<Page2> {
+class _CalculatorFaceState extends State<CalculatorFace> {
   String number1 = ""; // . 0-9
   String operand = ""; // + - * /
   String number2 = ""; // . 0-9
@@ -24,7 +25,13 @@ class _Page2State extends State<Page2> {
       body: SafeArea( // wrapping widget in SafeArea
         bottom: false, // If you don't want SafeArea in bottom part,
         child: Column( //Column allows for multiple widgets to be in one widget, Vertical.
-          children: [
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Image.asset(
+              'images/logo1.png', width: 100.0, height: 100.0,
+            ),
             
             // Answer (Output)
             Expanded( //This is required for SingleChildScrollView needs some size when used inside column or row
@@ -37,8 +44,6 @@ class _Page2State extends State<Page2> {
                     ? 
                     new Image.asset(
                         'images/300.jpeg',
-                          //height: 60.0,
-                          //fit: BoxFit.cover,
                       )
                     : ("$number1$operand$number2" == "3")
                       ?
@@ -56,7 +61,7 @@ class _Page2State extends State<Page2> {
                           'images/69.jpg',
                           )
                           : ("$number1$operand$number2" == "3.14")
-                            ?
+                            ? 
                             Text(
                               "π",
                               style: const TextStyle(
@@ -96,10 +101,14 @@ class _Page2State extends State<Page2> {
               children: Btn.buttonValues //Using a list from buttton_details.dart
                   .map(
                     (value) => SizedBox( //Giving each button a sized box
-                      width: value == Btn.n0
-                          ? screenSize.width / 3
-                          : (screenSize.width / 6), // Dynamic value of Width based on U.I
-                      height: screenSize.width / 5, // Dynamic value of Height based on U.I
+                      width: value == Btn.logout
+                        ? screenSize.width
+                        : value == Btn.n0
+                          ? screenSize.width / 2
+                          : (screenSize.width / 4), // Dynamic value of Width based on U.I
+                      height: value == Btn.logout
+                        ? screenSize.width / 8
+                        : screenSize.width / 5, // Dynamic value of Height based on U.I
                       child: buildButton(value),
                     ),
                   )
@@ -131,7 +140,7 @@ class _Page2State extends State<Page2> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
-                color: getTetColor(value),
+                color: getTextColor(value),
               ),
             ),
           ),
@@ -140,7 +149,18 @@ class _Page2State extends State<Page2> {
     );
   }
 
+  // ########
   void onBtnTap(String value) {
+    if (value == Btn.logout) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignInScreen(),
+      ),
+      (route) => false,
+      );
+    }
+
     if (value == Btn.del) {
       delete();
       return;
@@ -151,46 +171,11 @@ class _Page2State extends State<Page2> {
       return;
     }
 
-    if (value == Btn.per) {
-      convertToPercentage();
-      return;
-    }
-
-    if (value == Btn.fac) {
-      factorial();
-      return;
-    }
-
-    if (value == Btn.log) {
-      logof();
-      return;
-    }
-
-    if (value == Btn.res) {
-      reciprocal();
-      return;
-    }
-    
-    if (value == Btn.sqr) {
-      square();
-      return;
-    }
-
-    if (value == Btn.cub) {
-      cube();
-      return;
-    }
-
-    if (value == Btn.e) {
-      expon();
-      return;
-    }
-
-    if (value == Btn.les) {
+    if (value == Btn.mor) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => CalculatorFace(),
+          builder: (context) => Page2(),
       ),
       (route) => false,
       );
@@ -207,14 +192,12 @@ class _Page2State extends State<Page2> {
 
   // calculates the result
   void calculate() {
-    if (number1.isEmpty && operand.isNotEmpty) number1='0';
     if (number1.isEmpty) return;
     if (operand.isEmpty) return;
     if (number2.isEmpty) return;
 
-    double num1 = double.parse(number1);
-    double num2 = double.parse(number2);
-    double num;
+    final double num1 = double.parse(number1);
+    final double num2 = double.parse(number2);
 
     var result = 0.0;
     switch (operand) {
@@ -230,60 +213,10 @@ class _Page2State extends State<Page2> {
       case Btn.divide:
         result = num1 / num2;
         break;
-      case Btn.pow:
-        num = num1;
-        for (int i=1; i < num2; i++){
-        num1 = num1 * num;
-        }
-        result = num1;
-        break;
-      case Btn.p:
-        if (int.tryParse(number1) == null) return;
-        if (int.tryParse(number2) == null) return;
-        if (num2 > num1) return;
-
-        num2 = num1 - num2;
-        num = 1;
-        for (int i = 1; i < num1+1; i++){
-          num = num*i;
-        }
-        result = num;
-        num = 1;
-        for (int i = 1; i < num2+1; i++){
-          num = num*i;
-        }
-        result = result/num;
-        break;
-        case Btn.c:
-        if (int.tryParse(number1) == null) return;
-        if (int.tryParse(number2) == null) return;
-        if (num2 > num1) return;
-
-        num = 1;
-        for (int i = 1; i < num1+1; i++){
-          num = num*i;
-        }
-        result = num;
-
-        num = 1;
-        for (int i = 1; i < num2+1; i++){
-          num = num*i;
-        }
-        result = result/num;
-
-        num2 = num1 - num2;
-
-        num = 1;
-        for (int i = 1; i < num2+1; i++){
-          num = num*i;
-        }
-        result = result/num;
-
-        break;
       default:
     }
 
-    
+    if(result != 300){
       setState(() {
       number1 = result.toStringAsPrecision(3);
 
@@ -297,158 +230,25 @@ class _Page2State extends State<Page2> {
       operand = "";
       number2 = "";
       });
-  }
-
-  // ##############
-  // converts output to %
-  void convertToPercentage() {
-    // ex: 434+324
-    if (number1.isNotEmpty && operand.isNotEmpty && number2.isNotEmpty) {
-      // calculate before conversion
-      calculate();
     }
+    else {
+      setState(() {
+      number1 = result.toStringAsPrecision(3);
 
-    if (operand.isNotEmpty) {
-      // cannot be converted
-      return;
-    }
-
-    final number = double.parse(number1);
-    setState(() {
-      number1 = "${(number/100)}";
-      operand = "";
-      number2 = "";
-    });
-  }
-
-  void logof() {
-    if (number1.isNotEmpty && operand.isNotEmpty && number2.isNotEmpty) {
-      calculate();
-    }
-
-    if (operand.isNotEmpty) {
-      return;
-    }
-
-    var number = double.parse(number1);
-    number = log(number);
-    setState(() {
-      number1 = "${(number)}";
-      operand = "";
-      number2 = "";
-    });
-  } 
-
-  void expon() {
-    if (number1.isNotEmpty && operand.isNotEmpty && number2.isNotEmpty) {
-      calculate();
-    }
-
-    if (operand.isNotEmpty) {
-      return;
-    }
-
-    var number = double.parse(number1);
-    double n = 1;
-    for (int i = 1; i < number +1; i++){
-      n = n * 2.7182818284590452353602874713527;
-    }
-    setState(() {
-      number1 = "${(n)}";
-      operand = "";
-      number2 = "";
-    });
-  } 
-
-  void factorial() {
-    if (number1.isNotEmpty && operand.isNotEmpty && number2.isNotEmpty) {
-      // calculate before conversion
-      calculate();
-    }
-
-    if (operand.isNotEmpty) {
-      // cannot be converted
-      return;
-    }
-
-    if (int.tryParse(number1) == null) return;
-
-
-    var n = int.parse(number1);
-    int fact = 1;
-    for (int i = 1; i < n+1; i++){
-      fact = fact * i;
-    };
-    setState(() {
-      number1 = "${(fact)}";
-      operand = "";
-      number2 = "";
-    });
-  }
-
-  void reciprocal() {
-    if (number1.isNotEmpty && operand.isNotEmpty && number2.isNotEmpty) {
-      calculate();
-    }
-
-    if (operand.isNotEmpty) {
-      return;
-    }
-
-    var n = double.parse(number1);
-    setState(() {
-      number1 = "${(1/n)}";
-      operand = "";
-      number2 = "";
-    });
-  }
-
-  void square() {
-    if (number1.isNotEmpty && operand.isNotEmpty && number2.isNotEmpty) {
-      calculate();
-    }
-
-    if (operand.isNotEmpty) {
-      return;
-    }
-
-    var number = double.parse(number1);
-    number = number*number;
-    setState(() {
-      number1 = "${(number)}";
-      operand = "";
-      number2 = "";
       if (number1.endsWith(".0")) {
         number1 = number1.substring(0, number1.length - 2);
       }
       else if (number1.endsWith(".00")) {
         number1 = number1.substring(0, number1.length - 3);
       }
-    });
-  }
 
-  void cube() {
-    if (number1.isNotEmpty && operand.isNotEmpty && number2.isNotEmpty) {
-      calculate();
-    }
-
-    if (operand.isNotEmpty) {
-      return;
-    }
-
-    var number = double.parse(number1);
-    number = number*number*number;
-    setState(() {
-      number1 = "${(number)}";
       operand = "";
       number2 = "";
-      if (number1.endsWith(".0")) {
-        number1 = number1.substring(0, number1.length - 2);
+      });
+
+      img = true;
+
       }
-      else if (number1.endsWith(".00")) {
-        number1 = number1.substring(0, number1.length - 3);
-      }
-    });
   }
 
   // ##############
@@ -476,11 +276,15 @@ class _Page2State extends State<Page2> {
     setState(() {});
   }
 
+
+
   // #############
   // appends value to the end
   void appendValue(String value) {
     // number1 opernad number2
     // 234       +      5343
+
+    //
 
     // if is operand and not "."
     if (value != Btn.dot && int.tryParse(value) == null) {
@@ -517,53 +321,34 @@ class _Page2State extends State<Page2> {
 
   // ########
   Color getBtnColor(value) {
-    return [Btn.del, Btn.clr, Btn.les,].contains(value)
+    return [Btn.del, Btn.clr, Btn.mor, Btn.logout,].contains(value)
         ? Colors.blueGrey
         : [
-            Btn.per,
+            //Btn.mor,
             Btn.multiply,
             Btn.add,
             Btn.subtract,
             Btn.divide,
             Btn.calculate,
-            Btn.fac,
-            Btn.log,
-            Btn.res,
-            Btn.pow,
-            Btn.sqr,
-            Btn.cub,
-            Btn.p,
-            Btn.c,
-            Btn.e,
           ].contains(value)
             ? Colors.amber
             : Colors.black87;
   }
 
-  Color getTetColor(value) {
-    return 
-        [
-                        Btn.del,
-                        Btn.clr,
-                        Btn.les,
-                        Btn.per,
-                        Btn.multiply,
-                        Btn.add,
-                        Btn.subtract,
-                        Btn.divide,
-                        Btn.calculate,
-                        Btn.fac,
-                        Btn.log,
-                        Btn.res,
-                        Btn.pow,
-                        Btn.sqr,
-                        Btn.cub,
-                        Btn.p,
-                        Btn.c,
-                        Btn.e,
-                        ].contains(value)
-            ? Colors.black
-            : Colors.grey;
+  Color getTextColor(value) {
+    return [
+              Btn.del,
+              Btn.clr,
+              Btn.mor,
+              Btn.multiply,
+              Btn.add,
+              Btn.subtract,
+              Btn.divide,
+              Btn.calculate,
+              Btn.logout,
+                  ].contains(value)
+                  ? Colors.black
+                  : Colors.grey;
   }
 
 }
